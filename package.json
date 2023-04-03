@@ -1,5 +1,5 @@
 {
-  "name": "electron-app",
+  "name": "clocker",
   "version": "1.0.0",
   "description": "a clock desktop app.",
   "main": "index.js",

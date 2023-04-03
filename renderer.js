@@ -17,7 +17,6 @@ const timeCache = {
 renderScale()
 // 渲染时针
 renderPointer()
-
 // 渲染始终数字
 renderHourNumber()
 
@@ -31,6 +30,7 @@ function getCurrentTime() {
     const date = new Date()
     return {
         h: date.getHours() % 12,
+        H: date.getHours(),
         m: date.getMinutes(),
         s: date.getSeconds()
     }
@@ -39,7 +39,7 @@ function getCurrentTime() {
 // 产生一个differ differ 会只渲染变更的数据
 function diff(cache, newVal) {
     const differ = {}
-    for(let props in newVal) {
+    for(let props in cache) {
         if(newVal[props] != cache[props]) {
             differ[props] = newVal[props]
         }
@@ -65,11 +65,20 @@ function pointerMove(differ) {
     }
 }
 
+// 通知进程 触发消息推送
+function createNotification(infos) {
+    console.log(infos)
+    window.electronAPI.notify(infos)
+}
+
 // 计时
 function count() {
     if (!timer) clearTimeout(timer)
     timer = setTimeout(() => {
         const newTime = getCurrentTime()
+
+        dispathNotification(newTime)
+
         pointerMove(diff(timeCache, newTime))
 
         timeCache.h = newTime.h
@@ -77,7 +86,6 @@ function count() {
         timeCache.s = newTime.s
         return count()
     }, 1000)
-    
 }
 
 // 渲染刻度
@@ -102,6 +110,7 @@ function renderScale() {
     }
 }
 
+// 渲染刻度数字
 function renderHourNumber() {
     const hours = [12, 3, 6, 9]
     hours.forEach((h, i) => {
@@ -180,4 +189,45 @@ function calculateX(i) {
 // y
 function calculateY(i) {
     return Math.cos(Math.PI * i / 6) * 150
+}
+
+// 分发时间验证
+function dispathNotification(time) {
+    const { H, m, s } = time
+
+    if (H === 11 && m === 50 && s === 0) {
+        createNotification(
+            {
+                title: '午饭时间！',
+                body: '午饭时间到了！赶紧出发！您的小伙伴正在楼下等您！'
+            }
+        )
+    }
+
+    if (H === 17 && m === 5 && s === 0) {
+        createNotification(
+            {
+                title: '回家时间！',
+                body: '到点了到点了到点了！还有十分钟，别忘记打卡'
+            }
+        )
+    }
+
+    if (m === 0 && s === 0 && H > 9 && H < 17) {
+        createNotification(
+            {
+                title: '喝水时间！',
+                body: '喝水时间！已经工作一个小时了，不如起来活动一下吧！'
+            }
+        )
+    }
+
+    if (m === 25 && s === 0) {
+        createNotification(
+            {
+                title: 'damie',
+                body: 'abody msehs gsd.'
+            }
+        )
+    }
 }
