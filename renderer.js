@@ -221,13 +221,4 @@ function dispathNotification(time) {
             }
         )
     }
-
-    if (m === 25 && s === 0) {
-        createNotification(
-            {
-                title: 'damie',
-                body: 'abody msehs gsd.'
-            }
-        )
-    }
 }
