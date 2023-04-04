@@ -1,5 +1,11 @@
 // dom
 const clock = document.getElementById('clock')
+const digital = document.getElementById('digital')
+const digitalH = document.getElementById('digital-hours')
+const digitalM = document.getElementById('digital-minute')
+const digitalS = document.getElementById('digital-second')
+const changeBtn = document.getElementById('changeTimer')
+
 let sPointer = null
 let mPointer = null
 let hPointer = null
@@ -8,9 +14,21 @@ let hPointer = null
 let timer = null
 // 时间缓存
 const timeCache = {
+    H: 0,
     h: 0,
     m: 0,
     s: 0
+}
+
+// btn change
+changeBtn.onclick = function() {
+    if (clock.classList.contains('hide')) {
+        clock.classList.remove('hide')
+        digital.classList.add('hide')
+    } else {
+        digital.classList.remove('hide')
+        clock.classList.add('hide')
+    }
 }
 
 // 渲染刻度
@@ -19,6 +37,61 @@ renderScale()
 renderPointer()
 // 渲染始终数字
 renderHourNumber()
+
+// 数字的高低电平转化
+const binConvert = {
+    0: [1,1,0,1,1,1,1],
+    1: [0,1,0,0,1,0,0],
+    2: [1,1,1,0,0,1,1],
+    3: [1,1,1,0,1,1,0],
+    4: [0,1,1,1,1,0,0],
+    5: [1,0,1,1,1,1,0],
+    6: [1,0,1,1,1,1,1],
+    7: [1,1,0,0,1,0,0],
+    8: [1,1,1,1,1,1,1],
+    9: [1,1,1,1,1,1,0]
+}
+
+// 处理数字的显示
+function renderDigitalNumber(eleCollection, number) {
+    const bin = binConvert[number]
+    for(let ele of eleCollection){
+        ele.classList.remove('high-level')
+        const level = ele.getAttribute('dg')
+        if (bin[level]) {
+            ele.classList.add('high-level')
+        }
+    }
+}
+
+// 时间解析 处理differ
+function renderDigital(time){
+    const { H, m, s } = time
+
+    if (H !== undefined) {
+        const hBit = H.toString()
+        const hBitCompletement = hBit.length < 2 ? '0' + hBit : hBit
+        hBitCompletement.split('').forEach((b, index) => {
+            renderDigitalNumber(digitalH.children[index].children, b)
+        })
+    }
+
+    if (m !== undefined) {
+        const mBit = m.toString()
+        const mBitCompletement = mBit.length < 2 ? '0' + mBit : mBit
+        mBitCompletement.split('').forEach((b, index) => {
+            renderDigitalNumber(digitalM.children[index].children, b)
+        })
+    }
+
+    if (s !== undefined) {
+        const sBit = s.toString()
+        const sBitCompletement = sBit.length < 2 ? '0' + sBit : sBit
+        sBitCompletement.split('').forEach((b, index) => {
+            renderDigitalNumber(digitalS.children[index].children, b)
+        })
+    }
+}
 
 // 计时
 count()
@@ -61,6 +134,8 @@ function pointerMove(differ) {
             case 'h':
                 hPointer.style.cssText += `transform: rotateZ(${val * 30}deg)`
                 break;
+            default:
+                break;
         }
     }
 }
@@ -78,8 +153,9 @@ function count() {
         const newTime = getCurrentTime()
 
         dispathNotification(newTime)
-
-        pointerMove(diff(timeCache, newTime))
+        const differ = diff(timeCache, newTime)
+        pointerMove(differ)
+        renderDigital(differ)
 
         timeCache.h = newTime.h
         timeCache.m = newTime.m

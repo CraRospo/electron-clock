@@ -26,11 +26,131 @@
     background: #000;
     margin: -2px 0 0 -2px;
   }
+  .digital-container {
+    display: flex;
+  }
+  .digital-box {
+    display: flex;
+    gap: 14px;
+  }
+  .digital-box > div {
+    position: relative;
+    flex: none;
+    width: 30px;
+    height: 70px;
+  }
+  .digital-number-bin {
+    position: absolute;
+    width: 30px;
+    height: 3px;
+    transform-origin: center center;
+    background: #efefef;
+  }
+  .bin-0 { transform: translate();}
+  .bin-1 { transform: rotateZ(90deg) translate(18px, -18px); }
+  .bin-2 { transform: translate(0, 35px); }
+  .bin-3 { transform: rotateZ(90deg) translate(18px, 18px); }
+  .bin-4 { transform: rotateZ(90deg) translate(50px, -18px); }
+  .bin-5 { transform: translate(0, 65px); }
+  .bin-6 { transform: rotateZ(90deg) translate(50px, 18px); }
+  .dot-container {
+    margin: 0 6px;
+    width: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .dot {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+  .high-level { background: #000; }
+  .hide{ display: none; }
 </style>
 <body>
   <div id="clock">
     <div id="center"></div>
   </div>
+
+  <div id="digital" class="digital-container hide">
+    <div id="digital-hours" class="digital-box">
+      <div id="digital-hours-flow">
+        <div class="digital-number-bin bin-0" dg="0"></div>
+        <div class="digital-number-bin bin-1" dg="1"></div>
+        <div class="digital-number-bin bin-2" dg="2"></div>
+        <div class="digital-number-bin bin-3" dg="3"></div>
+        <div class="digital-number-bin bin-4" dg="4"></div>
+        <div class="digital-number-bin bin-5" dg="5"></div>
+        <div class="digital-number-bin bin-6" dg="6"></div>
+      </div>
+      <div id="digital-hours-bit">
+        <div class="digital-number-bin bin-0" dg="0"></div>
+        <div class="digital-number-bin bin-1" dg="1"></div>
+        <div class="digital-number-bin bin-2" dg="2"></div>
+        <div class="digital-number-bin bin-3" dg="3"></div>
+        <div class="digital-number-bin bin-4" dg="4"></div>
+        <div class="digital-number-bin bin-5" dg="5"></div>
+        <div class="digital-number-bin bin-6" dg="6"></div>
+      </div>
+      
+    </div>
+
+    <div class="dot-container">
+      <i class="dot high-level"></i>
+      <i class="dot high-level"></i>
+    </div>
+
+    <div id="digital-minute" class="digital-box">
+      <div id="digital-minute-flow">
+        <div class="digital-number-bin bin-0" dg="0"></div>
+        <div class="digital-number-bin bin-1" dg="1"></div>
+        <div class="digital-number-bin bin-2" dg="2"></div>
+        <div class="digital-number-bin bin-3" dg="3"></div>
+        <div class="digital-number-bin bin-4" dg="4"></div>
+        <div class="digital-number-bin bin-5" dg="5"></div>
+        <div class="digital-number-bin bin-6" dg="6"></div>
+      </div>
+      <div id="digital-minute-bit">
+        <div class="digital-number-bin bin-0" dg="0"></div>
+        <div class="digital-number-bin bin-1" dg="1"></div>
+        <div class="digital-number-bin bin-2" dg="2"></div>
+        <div class="digital-number-bin bin-3" dg="3"></div>
+        <div class="digital-number-bin bin-4" dg="4"></div>
+        <div class="digital-number-bin bin-5" dg="5"></div>
+        <div class="digital-number-bin bin-6" dg="6"></div>
+      </div>
+    </div>
+    <div class="dot-container">
+      <i class="dot high-level"></i>
+      <i class="dot high-level"></i>
+    </div>
+    <div id="digital-second" class="digital-box">
+      <div id="digital-second-flow">
+        <div class="digital-number-bin bin-0" dg="0"></div>
+        <div class="digital-number-bin bin-1" dg="1"></div>
+        <div class="digital-number-bin bin-2" dg="2"></div>
+        <div class="digital-number-bin bin-3" dg="3"></div>
+        <div class="digital-number-bin bin-4" dg="4"></div>
+        <div class="digital-number-bin bin-5" dg="5"></div>
+        <div class="digital-number-bin bin-6" dg="6"></div>
+      </div>
+      <div id="digital-second-bit">
+        <div class="digital-number-bin bin-0" dg="0"></div>
+        <div class="digital-number-bin bin-1" dg="1"></div>
+        <div class="digital-number-bin bin-2" dg="2"></div>
+        <div class="digital-number-bin bin-3" dg="3"></div>
+        <div class="digital-number-bin bin-4" dg="4"></div>
+        <div class="digital-number-bin bin-5" dg="5"></div>
+        <div class="digital-number-bin bin-6" dg="6"></div>
+      </div>
+    </div>
+  </div>
+
+  <button id="changeTimer">切换</button>
 
   <script src="./renderer.js"></script>
 </body>
