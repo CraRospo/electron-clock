@@ -14,10 +14,29 @@ let hPointer = null
 let timer = null
 // 时间缓存
 const timeCache = {
-    H: 0,
-    h: 0,
-    m: 0,
-    s: 0
+    H: 0,  // 24-hour
+    h: 0,  // 12-hour
+    m: 0,  // minutes
+    s: 0   // second
+}
+
+// 数字的高低电平转化
+// ****        0
+// *  *      3   1
+// ****  =>    2
+// *  *      6   4
+// ****        5
+const binConvert = {
+    0: [1,1,0,1,1,1,1],
+    1: [0,1,0,0,1,0,0],
+    2: [1,1,1,0,0,1,1],
+    3: [1,1,1,0,1,1,0],
+    4: [0,1,1,1,1,0,0],
+    5: [1,0,1,1,1,1,0],
+    6: [1,0,1,1,1,1,1],
+    7: [1,1,0,0,1,0,0],
+    8: [1,1,1,1,1,1,1],
+    9: [1,1,1,1,1,1,0]
 }
 
 // btn change
@@ -37,22 +56,14 @@ renderScale()
 renderPointer()
 // 渲染始终数字
 renderHourNumber()
+// 计时
+count()
 
-// 数字的高低电平转化
-const binConvert = {
-    0: [1,1,0,1,1,1,1],
-    1: [0,1,0,0,1,0,0],
-    2: [1,1,1,0,0,1,1],
-    3: [1,1,1,0,1,1,0],
-    4: [0,1,1,1,1,0,0],
-    5: [1,0,1,1,1,1,0],
-    6: [1,0,1,1,1,1,1],
-    7: [1,1,0,0,1,0,0],
-    8: [1,1,1,1,1,1,1],
-    9: [1,1,1,1,1,1,0]
-}
-
-// 处理数字的显示
+/**
+ * 将数字转化为对应的电平
+ * @param {Array} eleCollection 当前数字的domList集合
+ * @param {Number} number 需要显示的数字
+ */
 function renderDigitalNumber(eleCollection, number) {
     const bin = binConvert[number]
     for(let ele of eleCollection){
@@ -64,39 +75,26 @@ function renderDigitalNumber(eleCollection, number) {
     }
 }
 
-// 时间解析 处理differ
+// 时间解析 将时分秒分别进行转化和处理
 function renderDigital(time){
     const { H, m, s } = time
 
-    if (H !== undefined) {
-        const hBit = H.toString()
-        const hBitCompletement = hBit.length < 2 ? '0' + hBit : hBit
-        hBitCompletement.split('').forEach((b, index) => {
-            renderDigitalNumber(digitalH.children[index].children, b)
-        })
+    const collection = {
+        H: digitalH.children,
+        m: digitalM.children,
+        s: digitalS.children,
     }
 
-    if (m !== undefined) {
-        const mBit = m.toString()
-        const mBitCompletement = mBit.length < 2 ? '0' + mBit : mBit
-        mBitCompletement.split('').forEach((b, index) => {
-            renderDigitalNumber(digitalM.children[index].children, b)
-        })
-    }
-
-    if (s !== undefined) {
-        const sBit = s.toString()
-        const sBitCompletement = sBit.length < 2 ? '0' + sBit : sBit
-        sBitCompletement.split('').forEach((b, index) => {
-            renderDigitalNumber(digitalS.children[index].children, b)
-        })
+    for(let [key, value] of Object.entries({ H, m, s })) {
+        if(value !== undefined) {
+            const bit = value.toString()
+            const bitCompletement = bit.length < 2 ? '0' + bit : bit
+            bitCompletement.split('').forEach((b, index) => {
+                renderDigitalNumber(collection[key][index].children, b)
+            })
+        }
     }
 }
-
-// 计时
-count()
-// 初始化
-pointerMove(diff(timeCache, getCurrentTime()))
 
 // 获取时间对象
 function getCurrentTime() {
@@ -142,7 +140,6 @@ function pointerMove(differ) {
 
 // 通知进程 触发消息推送
 function createNotification(infos) {
-    console.log(infos)
     window.electronAPI.notify(infos)
 }
 
@@ -152,15 +149,23 @@ function count() {
     timer = setTimeout(() => {
         const newTime = getCurrentTime()
 
+        // 检查并分发通知
         dispathNotification(newTime)
+
+        // differ
         const differ = diff(timeCache, newTime)
+
+        // 渲染指针
         pointerMove(differ)
+
+        // 渲染数字
         renderDigital(differ)
 
-        timeCache.h = newTime.h
-        timeCache.m = newTime.m
-        timeCache.s = newTime.s
-        return count()
+        // 缓存
+        Object.assign(timeCache, differ)
+
+        // 递归
+        count()
     }, 1000)
 }
 
@@ -289,7 +294,7 @@ function dispathNotification(time) {
         )
     }
 
-    if (m === 0 && s === 0 && H > 9 && H < 17) {
+    if (m === 2 && s === 0 && H > 9 && H < 17) {
         createNotification(
             {
                 title: '喝水时间！',

@@ -6,6 +6,10 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
+      config: {
+        iconUrl: 'https://cn.vitejs.dev/logo.svg',
+        setupIcon: './assets/clock.ico',
+      }
     },
     {
       name: '@electron-forge/maker-zip',
