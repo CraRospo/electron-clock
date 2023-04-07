@@ -103,10 +103,10 @@ function renderCalendar() {
     dateStr.textContent = timeStr
 
     // 这个月有几天
-    const days = getCurrentMonthDays(M)
+    const days = getCurrentMonthDays(M + 1)
 
     // 上个月有几天
-    const lastMonthDays = getCurrentMonthDays(M - 1)
+    const lastMonthDays = getCurrentMonthDays(M)
 
     // 这个月的第一天是星期几
     const firstDay = new Date(`${Y}/${M + 1}/1`).getDay()
@@ -212,7 +212,7 @@ function isLeapYear(year) {
 
 // 当月天数
 function getCurrentMonthDays(month) {
-    const M = month >= 0 ? month + 1 : month + 12
+    const M = month === 0 ? 12 : month
     const { Y } = getCurrentDate()
     if (M === 2) {
         return isLeapYear(Y) ? 29 : 28
