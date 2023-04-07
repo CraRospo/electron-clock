@@ -27,6 +27,7 @@
     margin: -2px 0 0 -2px;
   }
   .digital-container {
+    margin-top: 20px;
     display: flex;
   }
   .digital-box {
@@ -70,12 +71,65 @@
   }
   .high-level { background: #000; }
   .hide{ display: none; }
+  .calendar-container {
+    width: 350px;
+    height: 400px;
+    position: fixed;
+    left: 0;
+    top: -375px;
+    margin-bottom: 20px;
+    z-index: 2;
+    transition: all cubic-bezier(0.65, 0.05, 0.36, 1) .6s;
+  }
+  .calendar-container > div {
+    background: #fff;
+  }
+  .down {
+    top: 0;
+  }
+  .pull-down {
+    height: 20px;
+  }
+  #calendar {
+    display: flex;
+    flex-wrap: wrap;
+    width: 350px;
+  }
+  .date {
+    position: relative;
+    box-sizing: border-box;
+    flex: none;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #ccc;
+    text-align: center;
+    line-height: 50px;
+  }
+  .date:nth-child(7n+1){
+    color: #ff0000;
+  }
+  .current::after {
+    content: '';
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    border: 1px solid #ff0000;
+    border-radius: 50%;
+  }
+  .prev {
+    color: #ccc;
+  }
 </style>
 <body>
+  <!-- 钟表盘 -->
   <div id="clock">
     <div id="center"></div>
   </div>
 
+  <!-- 数字时钟 -->
   <div id="digital" class="digital-container hide">
     <div id="digital-hours" class="digital-box">
       <div id="digital-hours-flow">
@@ -150,7 +204,15 @@
     </div>
   </div>
 
+  <!-- 切换按钮 -->
   <button id="changeTimer">切换</button>
+
+  <!-- 日程表 -->
+  <div class="calendar-container" id="calendar-container">
+    <div id="date"></div>
+    <div id="calendar"></div>
+    <div id="pull-down" class="pull-down">++</div>
+  </div>
 
   <script src="./renderer.js"></script>
 </body>

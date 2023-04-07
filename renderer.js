@@ -5,6 +5,10 @@ const digitalH = document.getElementById('digital-hours')
 const digitalM = document.getElementById('digital-minute')
 const digitalS = document.getElementById('digital-second')
 const changeBtn = document.getElementById('changeTimer')
+const calendar = document.getElementById('calendar')
+const dateStr = document.getElementById('date')
+const pullDown = document.getElementById('pull-down')
+const calendarC = document.getElementById('calendar-container')
 
 let sPointer = null
 let mPointer = null
@@ -50,6 +54,14 @@ changeBtn.onclick = function() {
     }
 }
 
+pullDown.onclick = function() {
+    if (calendarC.classList.contains('down')) {
+        calendarC.classList.remove('down')
+    } else {
+        calendarC.classList.add('down')
+    }
+}
+
 // 渲染刻度
 renderScale()
 // 渲染时针
@@ -58,6 +70,90 @@ renderPointer()
 renderHourNumber()
 // 计时
 count()
+// 日历
+renderCalendar()
+
+// 星期转换
+function convertDays(day) {
+    switch (day) {
+        case 0:
+            return '日'
+        case 1:
+            return '一'
+        case 2:
+            return '二'
+        case 3:
+            return '三'
+        case 4:
+            return '四'
+        case 5:
+            return '五'
+        case 6:
+            return '六'
+        default:
+            return ''
+    }
+}
+
+// 日历
+function renderCalendar() {
+    const { Y, M, D, d } = getCurrentDate()
+    // 显示时间
+    const timeStr = `${Y}/${M + 1}/${D} 星期${convertDays(d)}`
+    dateStr.textContent = timeStr
+
+    // 这个月有几天
+    const days = getCurrentMonthDays(M)
+
+    // 上个月有几天
+    const lastMonthDays = getCurrentMonthDays(M - 1)
+
+    // 这个月的第一天是星期几
+    const firstDay = new Date(`${Y}/${M + 1}/1`).getDay()
+
+    // 这个月的最后一天是星期几
+    const lastDay = new Date(`${Y}/${M + 1}/${days}`).getDay()
+
+    // 七天
+    const weekDays = ['Sun', 'Mon', 'Tus', 'Wen', 'Thu', 'Fri', 'Sat']
+
+    // 渲染星期
+    weekDays.forEach(d => {
+        const weekdays = document.createElement('div')
+        weekdays.classList.add('date')
+        weekdays.textContent = d
+        calendar.appendChild(weekdays)
+    })
+
+    // 需要渲染上个月几天
+    for(let e = lastMonthDays - firstDay + 1; e <= lastMonthDays; e++) {
+        const implement = document.createElement('div')
+        implement.classList.add('date')
+        implement.classList.add('prev')
+        implement.textContent = e
+        calendar.appendChild(implement)
+    }
+
+    // 渲染当月
+    for(let i = 1; i <= days; i++) {
+        const daysEle = document.createElement('div')
+        daysEle.classList.add('date')
+        if (i === D) {
+            daysEle.classList.add('current')
+        }
+        daysEle.textContent = i
+        calendar.appendChild(daysEle)
+    }
+
+    // 渲染下月
+    for(let n = 1; n < 6 - lastDay + 1; n++) {
+        const next = document.createElement('div')
+        next.classList.add('date')
+        next.classList.add('prev')
+        next.textContent = n
+        calendar.appendChild(next)
+    }
+}
 
 /**
  * 将数字转化为对应的电平
@@ -104,6 +200,37 @@ function getCurrentTime() {
         H: date.getHours(),
         m: date.getMinutes(),
         s: date.getSeconds()
+    }
+}
+
+// 是闰年
+function isLeapYear(year) {
+    if (year % 4 === 0 && year % 100 !== 0) return true
+    if (year % 400 === 0) return true
+    return false
+}
+
+// 当月天数
+function getCurrentMonthDays(month) {
+    const M = month >= 0 ? month + 1 : month + 12
+    const { Y } = getCurrentDate()
+    if (M === 2) {
+        return isLeapYear(Y) ? 29 : 28
+    } else if ([1, 3, 5, 7, 8, 10, 12].includes(M)) {
+        return 31
+    } else {
+        return 30
+    }
+}
+
+// 获取日期对象
+function getCurrentDate() {
+    const date = new Date()
+    return {
+        Y: date.getFullYear(),
+        M: date.getMonth(),
+        D: date.getDate(),
+        d: date.getDay()
     }
 }
 
@@ -294,7 +421,7 @@ function dispathNotification(time) {
         )
     }
 
-    if (m === 2 && s === 0 && H > 9 && H < 17) {
+    if (m === 0 && s === 0 && H > 9 && H < 17) {
         createNotification(
             {
                 title: '喝水时间！',
